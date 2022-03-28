@@ -1,0 +1,11 @@
+0011 0000 0000 0000  ; bprogram3.bits evaluates 1 + 2 + 3 + ... + n
+
+1010 001 0 0000 0111 ; LDI - load 'n' into R1 (number register)
+0101 010 010 1 00000 ; R2 will be SUM, init it
+0001 010 010 000 001 ; R2 = R2 + R1
+0001 001 001 1 11111 ; R1 - 1
+0000 001 1 1111 1101 ; LOOP back while number > 0
+0010 001 0 0000 0010 ; LD - load x4000 into R1 (number register)
+0111 010 001 00 0001 ; STR SUM to x4001
+1111 0000 0010 0101 ; HALT
+0100 0000 0000 0000 ; x4000

@@ -1,0 +1,33 @@
+0011 0000 0001 0000 ; bprogram5.bits larger-than subroutine
+; program will be loaded at x3020
+; the driver should be loaded at x3010
+
+; The Problem: given two positive numbers 'm' and 'n', decide which is larger.
+; The subroutine should put a 1 in R0 if 'm' > 'n' and put a 0 in R0 if
+;   'm' <= 'n'
+;
+; Assume that two integers, 'm', and 'n' reside at x3000 and x3001, respectively
+;
+; The Driver
+;  set 'm' and 'n' at x3000 and x3001 manually 
+0100 1 000 0000 1111 ; JSR to beginning of subroutine
+0010 001 0 0000 0011 ; LD x30 into R1 from end of driver
+0001 000 000 000 001 ; R0 = R0 + R1
+1111 0000 0010 0001 ; TRAP 21 (print subroutine value)
+1111 0000 0010 0101 ; HALT
+0000 0000 0011 0000 ; x30
+0011 0000 0010 0000 ; bprogram5.bits larger-than subroutine
+;
+; The Subroutine
+0101 000 000 1 00000 ; R0 = 0
+0010 001 0 0000 1000 ; load data address (x3000) into R1, from memory address just after end of program
+0110 010 001 000000 ; LDR 'm' into R2 (from x3000)
+0110 011 001 000001 ; LDR 'n' into R3 (from x3001)
+1001 011 011 1 11111 ; NOT R3
+0001 011 011 1 00001 ; R3++ (2's complement)
+0001 010 010 000 011 ; R2 = R2 + R3
+0000 110 0 0000 0001 ; BR, if N=1 or Z= 1 go to RET at current PC + 1
+0001 000 000 1 00001 ; R0++
+1100 000 111 000000 ; RET
+0011 0000 0000 0000 ; x3000
+

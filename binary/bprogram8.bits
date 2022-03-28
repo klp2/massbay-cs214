@@ -1,0 +1,31 @@
+0011 0000 0101 0000 ; bprogram8.bits calculates m*n
+
+; sub loads at x3050, driver at x3010
+;
+; Problem: given two positive integers 'm', and 'n', what is the product?
+; eg 8/3 = 2 and 7/5 = 2
+;
+; assume that two integers 'm' and 'n', reside at x3000 and x3001, respectively
+;
+; The Subroutine (nine lines starting at x3050)
+;
+0010 001 0 0000 0111 ; LD x3000 into a first register, called DATA ADDRESS (R1)
+0110 010 001 000000 ; LDR 'm' from x3000 into R2
+0110 011 001 000001 ; LDR 'n' from x3001 into R3
+0101 000 000 1 00000 ; R0 = 0 (via AND), PRODUCT
+0001 000 000 000 011 ; R0 = R0 + R3
+0001 010 010 1 11111 ; R2 = R2 - 1
+0000 001 111111101 ; BR P = back one step.
+1100 000 111 000000; RET
+0011 0000 0000 0000 ; x 3000
+;
+;
+; The Driver
+0011 0000 0001 0000 ; x load at 3010
+;
+0010 001 0 0000 0011 ; load x3050 into R1 from end of program
+0100 0 00 001 000000 ; JSRR to x3050 using R1
+0011 000 0 0000 0010 ; ST R0 to address just past the driver
+1111 0000 0010 0101 ; HALT
+0011 0000 0101 0000 ; x 3050
+

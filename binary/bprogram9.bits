@@ -1,0 +1,42 @@
+0011 0000 0110 0000 ; bprogram9.bits prime numbers
+
+; sub loads at x3060, driver at x3010
+;
+; Problem: Determine whether a given candidate number p is prime: 
+;          return 0 if is not prime and 1 if it is prime
+;
+; Asume that the integer p resides at x3000
+;
+; The Subroutine (eighteen lines starting at x3060)
+;
+0101 000 000 1 00000 ; x3060 R0 = 0 (via AND), ANSWER
+1010 001 0 0000 1111 ; x3061 LDI p (candidate) into R1 from end of program ( so PC + 17?)
+0101 010 010 1 00000 ; x3062 zero out R2 (candidate factor)
+0001 010 010 1 00010 ; x3063 add 2 to R2
+0001 011 010 1 00000 ; x3064 COPY (using ADD) R2 to R3
+;; Check whether the factor is too large
+1001 011 011 1 11111 ; x3065 Not R3
+0001 011 011 1 00001 ; x3066 add 1 to R3 to finish negating it
+0001 100 011 000 001 ; x3067 R4 = R3 + R1
+0000 110 0 0000 0110 ; x3068 BR, Z or N = 1, branch to just before RET
+0001 001 001 000 011 ; x3069 R1 = R1 + R3
+0000 001 1 1111 1110 ; x306A BR, P = 1 then back 1 statment to ADD
+0000 010 0 0000 0100 ; x306B BR, Z = 1, branch to RET
+0001 010 010 1 00001 ; x306C p not divisible by faactor, add 1 to factor (R2)
+1010 001 0 0000 0011 ; x306D LDI p(from end of program) to R1
+0000 111 1 1111 0101 ; x306E BR, always to COPY
+0001 000 000 1 00001 ; x306F exhausted all factors, add 1 to register R0 (p is prime)
+1100 000 111 000000  ; x3070 RET
+0011 0000 0000 0000  ; x3071 DATA address, x3000
+;
+; The Driver ( eight lines starting at x3010 )
+0011 0000 0001 0000  ; HEADER
+; choose a candidate prime number p for line x3000, set it manually
+0010 001 0 0000 0101 ; x3010 load subroutine address (x3060) into R1
+0100 0 00 001 000000 ; x3011 call subroutine with JSRR
+0010 001 0 0000 0100 ; x3012 Load x30 into R1 (from end of driver)
+0001 000 000 000 001 ; x3013 R0 = R1 + R0
+1111 0000 0010 0001  ; x3014 TRAP 21, print R0 to console
+1111 0000 0010 0101  ; x3015 HALT
+0011 0000 0110 0000  ; x3016 x3060
+0000 0000 0011 0000  ; x3017 x30

@@ -1,0 +1,33 @@
+0011 0000 0011 0000 ; bprogram6.bits calculates m/n
+
+; sub loads at x3030, driver at x3010
+;
+; Problem: given two positive integers 'n', and 'd', what is the quotient?
+; eg 8/3 = 2 and 7/5 = 1
+;
+; assume that two integers 'n' and 'd', reside at x3000 and x3001, respectively
+;
+; The Subroutine (12 lines starting at x3030)
+;
+0010 001 0 0000 1010 ; LD x3000 into a first register, called GLOBAL (R1)
+0110 010 001 000000 ; LDR 'n' from x3000 into NUMERATOR (R2)
+0110 011 001 000001 ; LDR 'd' from x3001 into DENOMINATOR (R3)
+1001 011 011 111111 ; NOT R3
+0001 011 011 1 00001 ; R3++ (2s complement)
+0101 000 000 1 00000 ; R0 = 0 (quotient collector and return value)
+0000 111 000000001 ; BR NZP = 1 to next step.
+0001 000 000 1 00001 ; R0++
+0001 010 010 000 011 ; R2 = R2 + R3
+0000 011 1 1111 1101 ; BR ZP = 1 back two steps (increment PC - 1)
+1100 000 111 000000; RET
+0011 0000 0000 0000 ; x 3000
+;
+; The Driver
+0011 0000 0001 0000 ; start at x3010
+
+0100 1 000 0001 1111 ; JSR to beginning of subroutine
+0010 001 0 0000 0011 ; LD x30 to R1 from end of driver
+0001 000 000 000 001 ; R0 = R0 + R1
+1111 0000 0010 0001 ; TRAP x21, print return value from R0
+1111 0000 0010 0101 ; HALT
+0000 0000 0011 0000 ; x30
