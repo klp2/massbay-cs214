@@ -1,0 +1,30 @@
+    .ORIG   x3000
+
+            LEA         R1, TESTOUT
+BACK_1      LDR         R0, R1, x0
+            BRz         NEXT_1
+            TRAP        x21
+            ADD         R1, R1, x1  ; ANSWER A
+            BRnzp       BACK_1
+
+NEXT_1      LEA         R1, TESTOUT
+BACK_2      LDR         R0, R1, x0
+            BRz         NEXT_2
+            JSR         SUB_1
+            ADD         R1, R1, x1
+            BRnzp       BACK_2
+
+NEXT_2      TRAP        x25 ; ANSWER B
+SUB_1       ADD         R0, R0, x5  ; ANSWER C
+K           LDI         R2, DSR
+            BRz         K         ; ANSWER D
+
+
+
+
+            STI         R0, DDR
+            RET
+DSR         .FILL       xFE04
+DDR         .FILL       xFE06
+TESTOUT     .STRINGZ    "ABC"
+            .END

@@ -1,0 +1,9 @@
+; assmembly4.asm worm
+
+        .ORIG       x3000
+        LEA         R1, END
+        ADD         R1, #4
+
+
+END     .FILL       x0
+        .END

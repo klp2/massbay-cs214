@@ -1,51 +1,36 @@
 ; assembly2.asm A) binary to ascii
-
-; print the binary version of a four numeral decimal number
-; the number should be stored with a label of NUMBER
 ;
+; translate integer value to ASCII-code binary version
+; so that the binary version can be printed to the console
 ;
+; NUMBER must come directly after the terminator for STRING
+;
+; I'm pretty sure this could be done more efficiently
 
-; read value from console, store as NUMBER
+            .ORIG       x3000
+            LD          R1, NUMBER          ; R1 will hold our number
+            LD          R2, MASK_START      ; R2 will hold our mask
+            LEA         R3, NUMBER          ; R3 tracks next address to hold character
+            ADD         R3, R3, #-2         ; start at end of string
 
-;LABELS		OPCODE		OPERANDS
-			.ORIG		x3000
+LOOP        LD          R4, ASCII_OFFSE
+            AND         R6, R1, R2
+            BRz         STORE
+            ADD         R4, R4, #1 
+STORE       STR         R4, R3, x0
+            ADD         R3, R3 #-1
+            ADD         R2, R2, R2
+            BRz         DONE
+            BRnp        LOOP
 
-			LD			R1, N
-			AND			R2, R2, #0	; R2 as accumulation spot
+DONE        LEA         R0, STRING
+            TRAP        x22
+            HALT
 
-LOOP		ADD			R2, R2, R1
-			ADD			R1, R1, #-1
-			BRp			LOOP
-
-
-			ST			R2, SUM
-			HALT
-NUMBER		.BLKW		16		; reserve 16 memory slot
-			.FILL		#0 ;      initialize memory for NUMBER
-			.END
-
-
-;LABEL     ;OPCODE     ;OPERANDS
-           .ORIG       x3000
-           LD          R1, NUMBER1
-           LD          R2, NUMBER2
-           JSR         ADDTWO
-           ST          R0, SUM
-           HALT
-
-NUMBER1    .FILL       x2
-NUMBER2    .FILL       x3
-SUM        .BLKW       x1
-
-
-ADDTWO     ADD         R0, R1, R2
-           ST          R7, RVALUE
-           JSR         ADDFIVE
-           LD          R7, RVALUE
-           RET
-RVALUE     .BLKW       x1
-
-ADDFIVE    ADD         R0, R0, #5
-           RET
-
-           .END
+MASK_START  .FILL       x1
+BITS        .FILL       #16
+ASCII_OFFSE .FILL       x30
+STRING      .BLKW       #16
+            .FILL       #0
+NUMBER      .FILL       #9867
+            .END
